@@ -1,8 +1,44 @@
 function minor {
-   IN=$1
-   echo $IN
+   ALL=$(git tags);
+   VERSION_FILE="/Users/blaise/Dev/temp/versions.txt";
+   SORTED=$(sort -g $VERSION_FILE);
+   versions=( $SORTED );
+   LAST=${versions[${#versions[@]}-1]};
+   split=$(echo $LAST | tr "." "\n")
+   levels=( $split )
+   LAST_PART=${levels[2]};
+   NEW=$(( ${levels[2]}  + 1 ))
+   array="${levels[0]} ${levels[1]} $NEW"
+   new=( "${levels[0]} ${levels[1]} $NEW" )
+   NEW_VERSION=$(join_by . ${new})
+   MESSAGE="Moving to $NEW_VERSION from $LAST"
+   gitTag $NEW_VERSION $MESSAGE;
 }
 
 function major {
-    echo 'here';
+    ALL=$(git tags);
+    VERSION_FILE="/Users/blaise/Dev/temp/versions.txt";
+    SORTED=$(sort -g $VERSION_FILE);
+    versions=( $SORTED );
+    LAST=${versions[${#versions[@]}-1]};
+    split=$(echo $LAST | tr "." "\n");
+    levels=( $split );
+    LAST_PART=${levels[1]};
+    NEW=$(( ${levels[1]}  + 1 ));
+    new_tag=( "${levels[0]} $NEW  0" );
+    NEW_VERSION=$(join_by . $new_tag);
+    MESSAGE="Moving to $NEW_VERSION from $LAST";
+    gitTag $NEW_VERSION $MESSAGE;
+}
+
+function join_by { local IFS="$1"; shift; echo "$*"; }
+function gitTag {$(git tag -a $1 -m $2)}
+
+function getLastGitVersion {
+    ALL=$(git tags);
+    VERSION_FILE="/Users/blaise/Dev/temp/versions.txt";
+    SORTED=$(sort -g $VERSION_FILE);
+    versions=( $SORTED );
+    LAST=${versions[${#versions[@]}-1]}
+    echo $LAST;
 }
