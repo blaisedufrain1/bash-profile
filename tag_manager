@@ -1,0 +1,8 @@
+function minor {
+   IN=$1
+   echo $IN
+}
+
+function major {
+    echo 'here';
+}

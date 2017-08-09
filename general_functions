@@ -1,0 +1,76 @@
+function dcexec {
+  args=""
+  for var in "$@"
+  do
+    args="$args $var"
+  done
+  docker-compose exec -T --user laradock workspace $args
+}
+
+function dartisan {
+  args="php artisan"
+  for var in "$@"
+  do
+    args="$args $var"
+  done
+  docker-compose exec -T --user laradock workspace $args
+}
+
+function behat {
+  args=""
+  for var in "$@"
+  do
+     args="$args $var"
+  done
+  ./vendor/bin/behat $args --no-snippets
+}
+
+function gg {
+  cd ~/projects/
+  for arg in $*
+  do
+    newDir=$(find ./* -type d -prune | grep $arg)
+    cd $newDir
+  done
+}
+
+function gp {
+  cd ~/projects/pagely/
+  newDir=$(find ./* -type d -prune | grep $*)
+  cd $newDir
+}
+
+function homestead {
+  directory=$(pwd)
+  cd ~/Homestead
+  vagrant $*
+  cd $directory
+}
+function vimConfig {
+  vim  ~/.vimrc
+}
+function bashConfig {
+  vim  ~/.bash_profile
+}
+function sourceVim {
+  source ~/.vimrc
+}
+function sourceBash {
+  source ~/.bash_profile
+}
+
+function metrics {
+  phpmetrics --report-html=phpmetricsreport $*
+}
+
+function rebuildPublic {
+  read -p "This command removes public/build public/dist/css and public/dist/js.  Are you sure you wish to continue? " -n 1 -r
+  echo
+  if [[ $REPLY =~ ^[Yy]$ ]]
+  then
+    rm -rf ./public/build
+    rm -rf ./public/dist/css
+    rm -rf ./public/dist/js
+    gulp && gulp
+  fi
+}
