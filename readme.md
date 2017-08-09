@@ -1,10 +1,10 @@
-This is a set of functions that can be used by all SM personnel.  
-
+This is a shared set of functions.  
 
 
 To use these functions
-1. Clone the repository anywhere you would like. 
-2. Add the following to you .bashrc or .bash_profile
+
+##  Clone the repository anywhere you would like. 
+##  Add the following to you .bashrc or .bash_profile
 
 ```
 
@@ -16,4 +16,4 @@ done
 
 ```
 
-3. Source your profile or start a new terminal session.
+##  Source your profile or start a new terminal session.
