@@ -4,53 +4,40 @@ function getLastGitVersion {
     $(echo $ALL > $VERSION_FILE);
     SORTED=$(sort -g $VERSION_FILE);
     versions=( $SORTED );
-    LAST=${versions[${#versions[@]}-1]}
-    echo $LAST;
+    CURRENT_VERSION=${versions[${#versions[@]}-1]}
+    split=$(echo $CURRENT_VERSION | tr "." "\n");
+    levels=( $split );
+    echo $levels;
 }
 
 function tagMinor {
-   CURRENT_VERSION=$(getLastGitVersion)
-   echo $CURRENT_VERSION;
-   split=$(echo $CURRENT_VERSION | tr "." "\n")
-   levels=( $split )
-   LAST_PART=${levels[2]};
-   NEW=$(( $LAST_PART  + 1 ))
-   new_tag=( "${levels[0]} ${levels[1]} $NEW" )
-   NEW_VERSION=$(join_by . $new_tag)
-   MESSAGE="Moving to $NEW_VERSION from $CURRENT_VERSION"
-   echo $MESSAGE;
-   gitTag $NEW_VERSION $MESSAGE;
+    levels=$(getLastGitVersion)
+    LAST_PART=${levels[2]};
+    NEW=$(( $LAST_PART  + 1 ))
+    new_tag=( "${levels[0]} ${levels[1]} $NEW" )
+    echo $new_tag
+    gitTag $(join_by . $new_tag) $CURRENT_VERSION;
 }
 
 function tagMajor {
-    CURRENT_VERSION=$(getLastGitVersion);
-    split=$(echo $CURRENT_VERSION | tr "." "\n");
-    levels=( $split );
+    levels=$(getLastGitVersion);
     LAST_PART=${levels[1]};
     NEW=$(( $LAST_PART  + 1 ));
     new_tag=( "${levels[0]} $NEW  0" );
-    NEW_VERSION=$(join_by . $new_tag);
-    MESSAGE="Moving to $NEW_VERSION from $CURRENT_VERSION";
-    echo $MESSAGE;
-    gitTag $NEW_VERSION $MESSAGE;
+    gitTag $(join_by . $new_tag)  $CURRENT_VERSION;
 }
 
 function tagVersion {
-   CURRENT_VERSION=$(getLastGitVersion);
-   echo $CURRENT_VERSION;
-   split=$(echo $CURRENT_VERSION | tr "." "\n");
-   levels=( $split );
+   levels=$(getLastGitVersion);
    LAST_PART=${levels[0]};
-   echo $LAST_PART;
    NEW=$(( $LAST_PART  + 1 ));
-   echo $NEW;
    new_tag=( "$NEW 0  0" );
-   NEW_VERSION=$(join_by . $new_tag);
-   MESSAGE="Moving to $NEW_VERSION from $CURRENT_VERSION";
-   echo $MESSAGE;
-   gitTag $NEW_VERSION $MESSAGE;
+   gitTag $(join_by . $new_tag) $CURRENT_VERSION;
 }
 
 function join_by { local IFS="$1"; shift; echo "$*"; }
-function gitTag { $(git tag -a $1 -m $2); echo $2; }
-
+function gitTag { 
+    MESSAGE="Moving to $1  from $CURRENT_VERSION";
+    echo "$MESSAGE";
+    $(git tag -a $1 -m "$MESSAGE"); 
+}
