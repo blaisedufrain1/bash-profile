@@ -1,7 +1,4 @@
-This is a shared set of functions.  
-
-
-To use these functions
+# This is a shared set of functions.  To use these functions:
 
 ##  Clone the repository anywhere you would like. 
 ##  Add the following to you .bashrc or .bash_profile (Make sure to include the public folder only)
