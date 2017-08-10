@@ -1,3 +1,4 @@
+
 function getLastGitVersion {
     ALL=$(git tags);
     VERSION_FILE="/Users/blaise/Dev/temp/versions.txt";
@@ -5,22 +6,29 @@ function getLastGitVersion {
     SORTED=$(sort -g $VERSION_FILE);
     versions=( $SORTED );
     CURRENT_VERSION=${versions[${#versions[@]}-1]}
-    split=$(echo $CURRENT_VERSION | tr "." "\n");
-    levels=( $split );
-    echo $levels;
+    echo $CURRENT_VERSION;
+}
+
+function splitLastGitVersion {
+    split=$(echo $1 | tr "." "\n");
+    echo $split;
 }
 
 function tagMinor {
-    levels=$(getLastGitVersion)
+    CURRENT_VERSION=$(getLastGitVersion);
+    splitVersion=$(splitLastGitVersion $CURRENT_VERSION);
+    levels=( $splitVersion );
     LAST_PART=${levels[2]};
     NEW=$(( $LAST_PART  + 1 ))
     new_tag=( "${levels[0]} ${levels[1]} $NEW" )
-    echo $new_tag
+    echo $new_tag;
     gitTag $(join_by . $new_tag) $CURRENT_VERSION;
 }
 
 function tagMajor {
-    levels=$(getLastGitVersion);
+    CURRENT_VERSION=$(getLastGitVersion);
+    splitVersion=$(splitLastGitVersion $CURRENT_VERSION);
+    levels=( $splitVersion );
     LAST_PART=${levels[1]};
     NEW=$(( $LAST_PART  + 1 ));
     new_tag=( "${levels[0]} $NEW  0" );
@@ -28,7 +36,9 @@ function tagMajor {
 }
 
 function tagVersion {
-   levels=$(getLastGitVersion);
+   CURRENT_VERSION=$(getLastGitVersion);
+   splitVersion=$(splitLastGitVersion $CURRENT_VERSION);
+   levels=( $splitVersion );
    LAST_PART=${levels[0]};
    NEW=$(( $LAST_PART  + 1 ));
    new_tag=( "$NEW 0  0" );
@@ -37,7 +47,7 @@ function tagVersion {
 
 function join_by { local IFS="$1"; shift; echo "$*"; }
 function gitTag { 
-    MESSAGE="Moving to $1  from $CURRENT_VERSION";
+    MESSAGE="Moving to $1 from $CURRENT_VERSION";
     echo "$MESSAGE";
     $(git tag -a $1 -m "$MESSAGE"); 
 }
