@@ -1,10 +1,12 @@
 # This is a shared set of functions.  To use these functions:
 
 ##  Clone the repository anywhere you would like. 
-##  Add the following to you .bashrc or .bash_profile (Make sure to include the public folder only) before any alias or function declarations that you have.
+##  Add the following to you .bashrc or .bash_profile (Make sure to include the public folder only) before any alias or function declarations that you have.  
+
 
 ```
-
+export pagelyPath="~/path/to/pagely"
+export projectPath="Users/name/path/projects/"
 BASH_DIR="/full/path/to/this-repo/public"
 
 for f in $(ls  $BASH_DIR);

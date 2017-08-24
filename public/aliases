@@ -1,18 +1,30 @@
-projectsPath="~/Projects/pagely"
+pagelyPath="~/projects/pagely"
+projectPath="~/projects/"
+
+alias toProj="cd $projectPath"
+alias goPagely="cd $pagelyPath"
+alias toFuncs="cd /Users/blaise/Dev/bash_functions/public" 
+
 alias ll="ls -lahGpF"
-alias toProj="cd ~/projects/"
 alias cl="clear"
 alias pingc="ping -c5"
-alias vm="ssh vagrant@127.0.0.1 -p 2222"
-alias goPagely="cd $projectsPath"
 alias tf="tail -f"
+
+## git aliases
 alias nah="git reset HEAD --hard"
+alias wip="git commit -am \"Work In Progress\" && git push origin"
+
+## gulp aliases
 alias gw="gulp && gulp watch"
 alias g2="gulp && gulp"
 alias wpgw="gulp --production  && gulp watch --production"
 alias gup="gulp --production"
+
+## docker aliases
 alias dbash="docker-compose exec workspace bash"
 alias dboot="ant docker-boot"
 alias dps="docker-compose ps"
 alias bootd="ant docker-boot"
-alias toFuncs="cd /Users/blaise/Dev/bash_functions/public" 
+alias bootd="ant docker-boot"
+alias downd="ant docker-down"
+
