@@ -10,9 +10,14 @@ alias cl="clear"
 alias pingc="ping -c5"
 alias tf="tail -f"
 
+alias artisan="php artisan"
+alias routes="php artisan route:list"
+
 ## git aliases
 alias nah="git reset HEAD --hard"
 alias wip="git commit -am \"Work In Progress\" && git push origin"
+alias fetch="git fetch --all --tags"
+alias tags="git tags --list"
 
 ## gulp aliases
 alias gw="gulp && gulp watch"
@@ -21,7 +26,9 @@ alias wpgw="gulp --production  && gulp watch --production"
 alias gup="gulp --production"
 
 ## docker aliases
+alias dc="docker-compose"
 alias dbash="docker-compose exec workspace bash"
+alias laradock="docker-compose exec --user laradock workspace bash"
 alias dboot="ant docker-boot"
 alias dps="docker-compose ps"
 alias bootd="ant docker-boot"

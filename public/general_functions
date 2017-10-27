@@ -1,27 +1,31 @@
+function parseArguments {
+    args=""
+    for var in  "$@" 
+    do  
+      args="$args $var"
+    done
+    echo $args
+}
+
 function dcexec {
-  args=""
-  for var in "$@"
-  do
-    args="$args $var"
-  done
+  args=$(parseArguments "$@")
+  echo $args;
   docker-compose exec -T --user laradock workspace $args
+}
+
+function dcRequire {
+  args=$(parseArguments "$@")
+  dcexec composer require $args
 }
 
 function dartisan {
-  args="php artisan"
-  for var in "$@"
-  do
-    args="$args $var"
-  done
-  docker-compose exec -T --user laradock workspace $args
+  base="php artisan"
+  args=$(parseArguments "$@")
+  docker-compose exec -T --user laradock workspace $base $args
 }
 
 function behat {
-  args=""
-  for var in "$@"
-  do
-     args="$args $var"
-  done
+  args=$(parseArguments "$@")
   ./vendor/bin/behat $args --no-snippets
 }
 
