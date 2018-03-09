@@ -17,13 +17,16 @@ alias routes="php artisan route:list"
 alias nah="git reset HEAD --hard"
 alias wip="git commit -am \"Work In Progress\" && git push origin"
 alias fetch="git fetch --all --tags"
-alias tags="git tags --list"
+alias tags="git tags -l | sort -V"
 
 ## gulp aliases
 alias gw="gulp && gulp watch"
 alias g2="gulp && gulp"
 alias wpgw="gulp --production  && gulp watch --production"
 alias gup="gulp --production"
+alias watch="ant webpack-watch"
+alias web-dev="ant webpack"
+alias webpack="ant webpack-production"
 
 ## docker aliases
 alias dc="docker-compose"
@@ -34,4 +37,8 @@ alias dps="docker-compose ps"
 alias bootd="ant docker-boot"
 alias bootd="ant docker-boot"
 alias downd="ant docker-down"
+
+
+alias unit="./vendor/bin/phpunit"
+alias fails="phpunit --stop-on-failure"
 

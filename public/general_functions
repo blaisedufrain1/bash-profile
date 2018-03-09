@@ -67,14 +67,7 @@ function metrics {
   phpmetrics --report-html=phpmetricsreport $*
 }
 
-function rebuildPublic {
-  read -p "This command removes public/build public/dist/css and public/dist/js.  Are you sure you wish to continue? " -n 1 -r
-  echo
-  if [[ $REPLY =~ ^[Yy]$ ]]
-  then
-    rm -rf ./public/build
-    rm -rf ./public/dist/css
-    rm -rf ./public/dist/js
-    gulp && gulp
-  fi
+function pubKey {
+    cat ~/.ssh/id_rsa.pub | pbcopy
+    echo "Copied public key to clipboard"
 }

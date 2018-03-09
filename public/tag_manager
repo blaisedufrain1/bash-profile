@@ -1,6 +1,6 @@
 
 function getLastGitVersion {
-    ALL=$(git tags);
+    ALL=$(tags);
     VERSION_FILE="/Users/blaise/Dev/temp/versions.txt";
     $(echo $ALL > $VERSION_FILE);
     SORTED=$(sort -g $VERSION_FILE);

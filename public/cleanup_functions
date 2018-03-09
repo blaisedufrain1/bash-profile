@@ -1,0 +1,16 @@
+function cleanTests {
+  find ./tests/_output/ -type d -name "record_*" | xargs rm -r
+}
+
+function rebuildPublic {
+  read -p "This command removes public/build public/dist/css and public/dist/js.  Are you sure you wish to continue? " -n 1 -r
+  echo
+  if [[ $REPLY =~ ^[Yy]$ ]]
+  then
+    rm -rf ./public/build
+    rm -rf ./public/dist/css
+    rm -rf ./public/dist/js
+    gulp && gulp
+  fi
+}
+
