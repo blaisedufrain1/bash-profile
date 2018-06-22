@@ -31,17 +31,26 @@ function behat {
 
 function gg {
   cd ~/projects/
-  for arg in $*
-  do
-    newDir=$(find ./* -type d -prune | grep $arg)
-    cd $newDir
-  done
+  if [ $# -ne 0 ]
+    then
+    for arg in $*
+    do
+      newDir=$(find ./* -type d -prune | grep $arg)
+      cd $newDir
+    done
+  fi
 }
 
 function gp {
   cd ~/projects/pagely/
-  newDir=$(find ./* -type d -prune | grep $*)
-  cd $newDir
+  if [ $# -ne 0 ]
+    then
+    for arg in $*
+    do
+      newDir=$(find ./* -type d -prune | grep $arg)
+      cd $newDir
+    done
+  fi
 }
 
 function homestead {
