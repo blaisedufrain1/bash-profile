@@ -22,6 +22,7 @@ alias tags="git tags -l | sort -V"
 ## gulp aliases
 alias gw="gulp && gulp watch"
 alias g2="gulp && gulp"
+alias g3="gulp && gulp && gulp"
 alias wpgw="gulp --production  && gulp watch --production"
 alias gup="gulp --production"
 alias watch="ant webpack-watch"
@@ -38,6 +39,7 @@ alias dps="docker-compose ps"
 alias bootd="ant docker-boot"
 alias bootd="ant docker-boot"
 alias downd="ant docker-down"
+alias dsql="docker run --name=mysql1 -d -p 63306:3306 -e MYSQL_USER=dev -e MYSQL_PASSWORD=dev123 -e MYSQL_DATABASE=dev mysql/mysql-server:5.7"
 
 
 alias unit="./vendor/bin/phpunit"

@@ -10,6 +10,7 @@ function rebuildPublic {
   if [[ $REPLY =~ ^[Yy]$ ]]
   then
     rm -rf ./public/build
+    rm -rf ./public/assets/css/main.css.map
     rm -rf ./public/dist/css
     rm -rf ./public/dist/js
     gulp && gulp
