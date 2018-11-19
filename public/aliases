@@ -39,7 +39,8 @@ alias dps="docker-compose ps"
 alias bootd="ant docker-boot"
 alias bootd="ant docker-boot"
 alias downd="ant docker-down"
-alias dsql="docker run --name=mysql1 -d -p 63306:3306 -e MYSQL_USER=dev -e MYSQL_PASSWORD=dev123 -e MYSQL_DATABASE=dev mysql/mysql-server:5.7"
+MYSQL_DATA_FOLDER=$(pwd)
+alias dsql="docker run --name=mysql1 -v $MYSQL_DATA_FOLDER/mysql_data:/var/lib/mysql -d -p 63306:3306 -e MYSQL_USER=dev -e MYSQL_PASSWORD=dev123 -e MYSQL_DATABASE=dev mysql/mysql-server:5.7"
 
 
 alias unit="./vendor/bin/phpunit"
