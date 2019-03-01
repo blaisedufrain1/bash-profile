@@ -30,7 +30,7 @@ function behat {
 }
 
 function gg {
-  cd ~/projects/
+  cd $projectPath
   if [ $# -ne 0 ]
     then
     for arg in $*
@@ -41,24 +41,6 @@ function gg {
   fi
 }
 
-function gp {
-  cd ~/projects/pagely/
-  if [ $# -ne 0 ]
-    then
-    for arg in $*
-    do
-      newDir=$(find ./* -type d -prune | grep $arg)
-      cd $newDir
-    done
-  fi
-}
-
-function homestead {
-  directory=$(pwd)
-  cd ~/Homestead
-  vagrant $*
-  cd $directory
-}
 function vimConfig {
   vim  ~/.vimrc
 }
