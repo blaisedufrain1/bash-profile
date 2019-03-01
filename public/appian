@@ -1,0 +1,1 @@
+alias jenk_files="git ls-files -- '*.jenkinsfile' | xargs -n1 basename | awk -F. '{print $1}' | sort"
