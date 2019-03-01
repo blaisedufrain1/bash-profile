@@ -1,5 +1,5 @@
 count_git_changes() {
-    git diff --numstat | wc -l 2> /dev/null
+    git diff --numstat 2> /dev/null | wc -l
 }
 
 parse_git_branch() {
