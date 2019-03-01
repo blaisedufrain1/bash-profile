@@ -9,8 +9,8 @@ export pagelyPath="~/path/to/pagely"
 export projectPath="Users/name/path/projects/"
 BASH_DIR="/full/path/to/this-repo/public"
 
-for f in $(ls  $BASH_DIR);
-   do source $BASH_DIR$f;
+for f in $(find $BASH_DIR -maxdepth 1 -type f);
+   do source $f;
 done
 
 ```
