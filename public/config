@@ -1,0 +1,11 @@
+count_git_changes() {
+    git diff --numstat | wc -l 2> /dev/null
+}
+
+parse_git_branch() {
+    CHANGES=$(count_git_changes)
+    git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/(\1 - '"$CHANGES"')/'
+}
+ 
+# set the PS1 variable
+PS1="\[\A\] \w\[\e[0;33;49m\] \$(parse_git_branch) \[\e[0;0m\] $ "
