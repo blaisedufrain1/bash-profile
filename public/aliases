@@ -1,5 +1,4 @@
 pagelyPath="~/projects/pagely"
-projectPath="~/projects/"
 
 alias toProj="cd $projectPath"
 alias goPagely="cd $pagelyPath"
