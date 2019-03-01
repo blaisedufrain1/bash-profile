@@ -1,3 +1,20 @@
 alias devStart="./dev  start --default-data"
 
 alias jenk_files="git ls-files -- '*.jenkinsfile' | xargs -n1 basename | awk -F. '{print $1}' | sort"
+
+
+function framework-for {                                                                                                        
+  testname=$1                                                                                                                   
+  for file in $(dirname $(git ls-files *$testname)); do                                                                         
+    while [ "$file" != "." ]; do                                                                                                
+      if find $file -maxdepth 1 -type f -name '*.jenkinsfile' | grep jenkinsfile; then                                          
+        return                                                                                                                  
+      else                                                                                                                      
+        file=$(dirname $file)                                                                                                   
+      fi                                                                                                                        
+    done                                                                                                                        
+  done                                                                                                                          
+  for i in build/modules/frameworks/*.xml; do                                                                                   
+    ant -s build/build.xml echofileset -q -Dfileset=framework.`basename ${i%*.xml}` | tr "[;:]" "\n" | grep $testname && echo $i
+  done                                                                                                                          
+}

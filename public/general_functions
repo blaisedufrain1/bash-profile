@@ -35,7 +35,8 @@ function gg {
     then
     for arg in $*
     do
-      newDir=$(find ./* -type d -prune | grep $arg)
+      newDir=$(find ./* -maxdepth 2 -type d | grep $arg | head -1)
+      echo "Navigating to " $projectPath/$newDir
       cd $newDir
     done
   fi
