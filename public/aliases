@@ -3,8 +3,10 @@ projectPath="~/projects/"
 
 alias toProj="cd $projectPath"
 alias goPagely="cd $pagelyPath"
-alias toFuncs="cd /Users/blaise/Dev/bash_functions/public" 
+alias toFuncs="cd $BASH_DIR"
 
+
+alias devStart="./dev  start --default-data"
 alias ll="ls -lahGpF"
 alias cl="clear"
 alias pingc="ping -c5"

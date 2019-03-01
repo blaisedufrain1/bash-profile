@@ -1,7 +1,7 @@
 function parseArguments {
     args=""
-    for var in  "$@" 
-    do  
+    for var in  "$@"
+    do
       args="$args $var"
     done
     echo $args
