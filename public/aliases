@@ -1,10 +1,9 @@
-pagelyPath="~/projects/pagely"
-
 alias toProj="cd $projectPath"
-alias goPagely="cd $pagelyPath"
 alias toFuncs="cd $BASH_DIR"
 
-alias ll="ls -lahGpF"
+LS_COLORS='rs=0:di=01;34:ln=01;36:mh=00:pi=40;33'
+
+alias ll="ls -ahpFl --color=always"
 alias cl="clear"
 alias pingc="ping -c5"
 alias tf="tail -f"

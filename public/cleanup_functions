@@ -1,3 +1,5 @@
+#!/usr/env/bash
+
 function cleanTests {
   find ./tests/_output/ -type d -name "record_*" | xargs rm -r
   find ./tests/_output/* -type f -name '*.fail.png' | xargs rm

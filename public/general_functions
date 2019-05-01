@@ -1,3 +1,5 @@
+#!/usr/env/bash
+
 function parseArguments {
     args=""
     for var in  "$@"
@@ -42,17 +44,27 @@ function gg {
   fi
 }
 
+function search {
+  if [ $# -ne 0 ]
+    then
+    for arg in $*
+    do
+      newDir=$(find $projectPath/* -not -path '*/\.*' | grep $arg | grep -v "test" | sort)
+    done
+  fi
+}
+
 function vimConfig {
   vim  ~/.vimrc
 }
 function bashConfig {
-  vim  ~/.bash_profile
+  vim  ~/.profile
 }
 function sourceVim {
   source ~/.vimrc
 }
 function sourceBash {
-  source ~/.bash_profile
+  source ~/.profile
 }
 
 function metrics {
