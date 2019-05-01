@@ -25,4 +25,4 @@ LIGHT_CYAN="\[\033[96m\]"
 
  
 # set the PS1 variable
-PS1="\a$MAGENTA \A $CYAN \u $WHITE\w $YELLOW\$(parse_git_branch) $WHITE \$ "
+PS1="$MAGENTA \A $CYAN \u $WHITE\w $YELLOW\$(parse_git_branch) $WHITE \$ "
