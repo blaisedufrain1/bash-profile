@@ -26,3 +26,8 @@ LIGHT_CYAN="\[\033[96m\]"
  
 # set the PS1 variable
 PS1="$MAGENTA \A $CYAN \u $WHITE\w $YELLOW\$(parse_git_branch) $WHITE \$ "
+
+bind '"\e[A":history-search-backward'
+bind '"\e[B":history-search-forward'
+bind '"\e[C":forward-char'
+bind '"\e[D":backward-char'
