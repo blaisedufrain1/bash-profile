@@ -1,7 +1,7 @@
 #!/usr/env/bash
 
 count_git_changes() {
-    git diff --numstat 2> /dev/null | wc -l
+    git diff --numstat 2> /dev/null | wc -l | xargs
 }
 
 parse_git_branch() {
