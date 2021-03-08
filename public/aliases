@@ -3,7 +3,7 @@ alias toFuncs="cd $BASH_DIR"
 
 LS_COLORS='rs=0:di=01;34:ln=01;36:mh=00:pi=40;33'
 
-alias ll="ls -ahpFl --color=always"
+alias ll="ls -ahpFlG"
 alias cl="clear"
 alias pingc="ping -c5"
 alias tf="tail -f"
