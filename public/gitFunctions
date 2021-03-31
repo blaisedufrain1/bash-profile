@@ -1,0 +1,41 @@
+function registerGitAliases {
+  git config --global alias.st status
+  git config --global alias.ci commit
+  git config --global alias.br branch
+  git config --global alias.co checkout
+  git config --global alias.bro "log --oneline"
+}
+
+
+## Function used to stash incrementally a specified number of commits. 
+#This is effectively a reset that keeps the commits segmented
+function stashBack() {
+  for i in $(eval echo {1..$1})
+  do
+    MESSAGE=$(git log -1 --pretty=%B)
+    echo "stashing commit with message $MESSAGE"
+    git reset HEAD~1
+    git add .
+    git stash push -m "$MESSAGE"
+  done
+}
+
+function get {
+  if [[ $# -lt 2 ]];then
+    echo "Please specify a remote and branch name" 
+  elif [[ $# -eq 2 ]];then
+    git fetch $1 $2 && git checkout -b $2 FETCH_HEAD 
+  else
+    git fetch git@github.com:$1/$2.git $3 && git checkout -b $3 FETCH_HEAD 
+  fi
+}
+
+function gitCreated {
+  echo "The file $1 was created in this commit\n"
+  git bro --reverse -- $1 | head -1
+}
+export -f gitCreated
+
+function showFilesModified {
+ git diff-tree --no-commit-id --name-only -r $1 
+}

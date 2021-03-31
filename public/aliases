@@ -3,10 +3,11 @@ alias toFuncs="cd $BASH_DIR"
 
 LS_COLORS='rs=0:di=01;34:ln=01;36:mh=00:pi=40;33'
 
-alias ll="ls -ahpFlG"
+alias ll="ls -ahpFlG --color=auto"
 alias cl="clear"
 alias pingc="ping -c5"
 alias tf="tail -f"
+alias grep="grep --color"
 
 alias artisan="php artisan"
 alias routes="php artisan route:list"

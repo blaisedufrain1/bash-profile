@@ -5,8 +5,7 @@
 
 
 ```
-export pagelyPath="~/path/to/pagely"
-export projectPath="Users/name/path/projects/"
+export repo="~/repo/"
 BASH_DIR="/full/path/to/this-repo/public"
 
 for f in $(find $BASH_DIR -maxdepth 1 -type f);
