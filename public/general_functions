@@ -37,7 +37,7 @@ function gg {
     then
     for arg in $*
     do
-      newDir=$(find ./* -not -path '*/\.*' -maxdepth 4 -type d | grep $arg | grep -v "test" | sort | head -1)
+      newDir=$(ls | grep $arg | sort | head -n 1)
       echo "Navigating to " $projectPath/$newDir
       cd $newDir
     done
@@ -74,4 +74,8 @@ function metrics {
 function pubKey {
     cat ~/.ssh/id_rsa.pub | pbcopy
     echo "Copied public key to clipboard"
+}
+
+function addAlias {
+   echo "alias $1=\"$2\"" >> $BASH_DIR/aliases
 }

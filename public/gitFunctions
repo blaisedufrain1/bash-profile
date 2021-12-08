@@ -21,8 +21,20 @@ function stashBack() {
 }
 
 function get {
-  if [[ $# -lt 2 ]];then
+  if [[ $# -lt 1 ]];then
     echo "Please specify a remote and branch name" 
+  elif [[ $# -eq 1 ]];then
+    OLDIFS=$IFS
+    IFS=":"
+    read -a strarr <<< "$1"
+    if [[ ${#strarr[*]} -ne 2 ]];then
+      echo "Expected the format fork:branch"
+    else
+      FORK=$(cut -d':' -f1 <<< $1)
+      BRANCH=$(cut -d':' -f2 <<< $1)
+      git fetch git@github.com:${FORK}/ae.git ${BRANCH} && git checkout -b ${BRANCH} FETCH_HEAD
+    fi
+    unset IFS
   elif [[ $# -eq 2 ]];then
     git fetch $1 $2 && git checkout -b $2 FETCH_HEAD 
   else
@@ -35,6 +47,11 @@ function gitCreated {
   git bro --reverse -- $1 | head -1
 }
 export -f gitCreated
+
+function changedBy {
+  echo "The file $1 was changed in these commits\n"
+  git bro -- $1
+}
 
 function showFilesModified {
  git diff-tree --no-commit-id --name-only -r $1 
