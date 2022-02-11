@@ -1,0 +1,106 @@
+#!/bin/bash
+function adsSchemas {
+  cat <<EOF | ads-cli query -f -
+  [["~#ref", "Schema"], null, {
+   "schemaName": [["~#ref", "schemaName"],null, null],
+   "migrationVersion": [["~#ref", "migrationVersion"],null, null]  }]
+
+EOF
+}
+
+function adsSecurity {
+  cat <<EOF | ads-cli query -f -
+  [["~#ref", "SecurityPolicy"], null, {
+   "uuid": [["~#ref", "uuid"],null,null],
+   "secPolicyExpr": [["~#ref", "secPolicyExpr"],null, null] }]
+
+EOF
+}
+
+function adsToken {
+  if [ $# -gt 0 ];then
+    REMOTE_ADDRESS=$1
+    PATH_BASE="/usr/local/appian/ae/conf/"
+  else
+    REMOTE_ADDRESS=$(getRemote)
+    PATH_BASE="/home/appian/suite/conf/"
+  fi
+  TOKEN=$(</dev/null ssh appian@$REMOTE_ADDRESS "cat ${PATH_BASE}data-server-sec.properties" | awk '{sub(/dataserver.password=/," ")}; $1' | xargs sh -c 'echo "$0"')
+  echo $TOKEN | ads-cli config set-context default --security-token
+}
+
+
+function adsGet {
+  if [ $(cat ~/.ads-cli.yaml | grep -c token) -eq 0 ];then 
+    adsToken
+  fi 
+  FILENAME="/tmp/tempAdsGet.txt"
+  ARGSLIMIT=$(( $# - 1 ))
+  SEARCH_SPACE="uuid"
+  if [ $# -gt 0 ];then
+    SEARCH_SPACE="$1"
+  fi
+  # Clear file
+  echo "" > $FILENAME
+  # Add query schema and uuid attr
+  echo "[[\"~#ref\", \"search_space\"], null, {" >> $FILENAME
+  # Add projections
+  for projection in ${@:2}
+  do   
+    echo "\"$projection\": [[\"~#ref\", \"$projection\"],null, null]," >> $FILENAME
+  done
+  echo "\"uuid\": [[\"~#ref\", \"uuid\"],null, null]" >> $FILENAME
+  # Close query
+  echo '}]' >> $FILENAME
+  sed -i '.txt' "s/search_space/${SEARCH_SPACE}/g" $FILENAME
+  # show query executed
+  cat $FILENAME
+  ads-cli query -f $FILENAME
+}
+
+function adsQuery {
+  if [ $(cat .ads-cli.yaml | grep -c token) -eq 0 ];then
+    adsToken
+  fi
+  FILENAME="/tmp/tempAdsQuery.txt"
+  # Clear file
+  echo "" > $FILENAME
+  FILTER=""
+  PROJECTION_COUNT=1
+  # Add projections
+  echo "[[\"~#ref\", \"view_placeholder\"], null, {" >> $FILENAME
+  echo "" >> $FILENAME
+  while getopts "v:" opt; do
+  echo $OPTARG
+  case $opt in
+    v)
+    echo "view"
+    sed -i '.txt' 's/view_placeholder/$OPTARG/g' $FILENAME ;;
+    p)
+    echo "projection"
+    echo "\"${OPTARG}\": [[\"~#ref\", \"$OPTARG\"],null, null]," >> $FILENAME
+    ((PROJECTION_COUNT=PROJECTION_COUNT+1)) ;;
+    f) 
+    echo "filter"
+    FILTER=$OPTARG ;;
+  esac
+  shift
+  done
+  # Close query
+  echo "\"uuid\": [[\"~#ref\", \"uuid\"],null, null]" >> $FILENAME
+  echo "" >> $FILENAME
+  echo '}]' >> $FILENAME
+  sed -i '.txt' 's/view_placeholder/uuid/g' $FILENAME
+  # show query executed
+  cat $FILENAME
+  if [ "$FILTER" = "" ]; then
+    echo "unfiltered"
+    echo $FILTER
+    #ads-cli query -f $FILENAME
+  else
+    echo "filtered"
+    echo $FILTER
+    #ads-cli query -f $FILENAME | awk '/$FILTER/{x=NR+$PROJECTION_COUNT}(NR<=x){print}' 
+  fi
+}
+
