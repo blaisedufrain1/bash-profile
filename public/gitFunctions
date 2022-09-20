@@ -56,3 +56,15 @@ function changedBy {
 function showFilesModified {
  git diff-tree --no-commit-id --name-only -r $1 
 }
+
+function pushForCi {
+  TARGET_FORK=git remote -v | awk '/${0}/ {print}' | awk '/push/ {print $2}' | sed -e 's/git@github.com://' | sed -e 's/\/ae.git//'
+  echo "$TARGET_FORK"
+  echo "git remote rename $0 $TARGET_FORK"
+  echo "git push ci $TARGET_FORK/$(git branch --show-current) -f"
+  echo "git remote rename $TARGET_FORK $0"
+}
+
+function clearNotes {
+  git notes list | awk -F\  '{print $2}' | xargs git notes remove
+}
