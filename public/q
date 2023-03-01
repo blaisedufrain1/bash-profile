@@ -1,0 +1,5 @@
+export QHOME=~/q
+export PATH=$PATH:$QHOME/m32
+alias q="rlwrap -r $QHOME/m32/q"
+export QLIC=~/q
+export QINIT=~/repo/data-layer/appian-data-server/src/main/engine/q.q

@@ -1,0 +1,31 @@
+version: 0.6.17
+adsconfig.d: ""
+current-context: default
+contexts:
+- name: default
+  context:
+    cluster: local
+    user: root
+    security-token: HxhS9B5g/ut2I8I3bUCK7Y0JOhU=
+    aliases: []
+clusters:
+- name: local
+  cluster:
+    nodes:
+    - name: node-1
+      node:
+        host: localhost
+        wd-port: 5400
+        hs-port: 5401
+        appender-port: 5404
+        rts-ports:
+        - 5450
+        - 5452
+users:
+- name: root
+  user:
+    id: -1
+    groups:
+    - -2
+    branch: 0
+    locale: en_US

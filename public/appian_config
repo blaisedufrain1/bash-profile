@@ -1,0 +1,158 @@
+#!/usr/bin/env bash 
+alias ae="cd $projectPath/ae"
+alias dl="cd $projectPath/data-layer"
+alias devStart="./dev start"
+alias toRepo="cd $projectPath"
+alias toProj="cd ~/projects"
+alias jenk_files="git ls-files -- '*.jenkinsfile' | xargs -n1 basename | awk -F. '{print $1}' | sort"
+alias gws="./gradlew setup"
+alias redo="./dev restart webapp"
+alias toad="/Users/blaise.dufrain/repo/tech-tools/toad-tracker/toad"
+alias darn="./dev stop && ./dev start --new-agent"
+alias bounce="./dev restart webapp"
+alias dv="./dev"
+alias sourceWorktreeAliases="source $projectPath/.worktree_aliases"
+
+sourceWorktreeAliases
+
+function k {
+  ae 
+  docker run -ti --rm -h test.appiancorp.com -v $projectPath/ae/server/_bin/k/k3lic/k3-linux.lic:/usr/local/appian/ae/server/_bin/k/linux64/k3.lic docker.eng.appianci.net/appian/service-manager bash
+}
+
+function runappian {
+  toRepo && ae
+  devStart "$@"
+}
+function framework-for {                                                                                                        
+  testname=$1                                                                                                                   
+  for file in $(dirname $(git ls-files *$testname)); do                                                                         
+    while [ "$file" != "." ]; do                                                                                                
+      if find $file -maxdepth 1 -type f -name '*.jenkinsfile' | grep jenkinsfile; then                                          
+        return                                                                                                                  
+      else                                                                                                                      
+        file=$(dirname $file)                                                                                                   
+      fi                                                                                                                        
+    done                                                                                                                        
+  done                                                                                                                          
+  for i in build/modules/frameworks/*.xml; do                                                                                   
+    ant -s build/build.xml echofileset -q -Dfileset=framework.`basename ${i%*.xml}` | tr "[;:]" "\n" | grep $testname && echo $i
+  done                                                                                                                          
+}
+
+function dev_site_ssm() {
+  aws sts get-caller-identity --profile developer-eng-prod-access || aws sso login --profile developer-eng-prod-access && aws ssm start-session --profile developer-eng-prod-access --target $(aws ec2 describe-instances --profile developer-eng-prod-access --filter Name=private-ip-address,Values=$(dig +short $1) | jq -r '.Reservations[].Instances[].InstanceId')
+}
+
+function dev_site_scp() {
+  LOCAL_PATH="$1"
+  HOST=$(echo "$2" | cut -d':' -f1)
+  REMOTE_PATH=$(echo "$2" | cut -d':' -f2)
+  aws sts get-caller-identity --profile developer-eng-prod-access || aws sso login --profile developer-eng-prod-access && aws s3 cp --profile developer-eng-prod-access $LOCAL_PATH s3://appian-dev-site-scp-intermediary/$(pwd)/$LOCAL_PATH && aws ssm send-command --profile developer-eng-prod-access --document-name AWS-RunShellScript --parameters commands=["aws s3 cp s3://appian-dev-site-scp-intermediary/$(pwd)/$LOCAL_PATH $REMOTE_PATH"] --targets Key=instanceids,Values=$(aws ec2 describe-instances --profile developer-eng-prod-access --filter Name=private-ip-address,Values=$(dig +short $HOST) | jq -r '.Reservations[].Instances[].InstanceId')
+}
+
+function sshci {
+  # ssh appian@$1.appianci.net
+  dev_site_ssm $1.appianci.net
+}
+
+function newTree {
+  echo "Creating a new worktree to track the ${1}-maint branch"
+  STRIPPED=$(echo $1 | sed 's/\.//g')
+  echo "alias ${STRIPPED}maint=\"cd ~/repo/${STRIPPED}maint/\"" >> $worktreeAliases
+  sourceWorktreeAliases
+  git fetch appian $1-maint
+  git worktree add -b $1-maint ../${STRIPPED}maint appian/$1-maint
+}
+
+function getRemote {
+  cat ~/.dev_config.json | grep remote_dev_url | cut -d : -f2 | awk  -F\" '{print $2}'
+}
+
+function pullRequest {
+  USERNAME="blaisedufrain1"
+  echo "Creating new GitHub pull request"
+  SOURCE_BRANCH="${1:-$(git rev-parse --abbrev-ref HEAD)}"
+  BRANCH="${2:-$(pwd | sed -E 's/(.*\/)([a-z0-9]*)/\2/' | sed -E 's/(\d\d)(\d)([a-z]*)/\1.\2-\3/'  | sed -E 's/ae/master/')}"
+  if [ $BRANCH != "master" ];then
+    BRANCH=${BRANCH:0:2}.${BRANCH:2:1}-${BRANCH:3}
+  fi
+  echo "Using Base Fork: $BRANCH"
+  echo "Against you branch: $SOURCE_BRANCH"
+  open "https://github.com/appian/ae/compare/${BRANCH}...${USERNAME}:${SOURCE_BRANCH}?expand=1"
+}
+
+function newRemote {
+  git remote add $1 "git@github.com:$1/ae.git"
+}
+
+function tree {
+  toRepo
+  if [[ $1 =~ ^[0-9] ]]; 
+  then
+    cd "$1maint"
+  else
+    cd $1
+  fi
+}
+
+function backport {
+  BACKPORT_TREE=$(echo $1 | tr -d '.')
+  BRANCH_NAME=$(git rev-parse --abbrev-ref HEAD)
+  echo $BACKPORT_TREE
+  CURRENT_DIR=$(pwd)
+  ae
+  if [ -d "../${BACKPORT_TREE}maint" ];then
+    COMMIT=$(git rev-parse HEAD)
+    cd $(echo ../${BACKPORT_TREE}maint)
+    pwd
+    git fetch appian $1-maint
+    git switch --force-create $BRANCH_NAME-$BACKPORT_TREE appian/$1-maint
+    git cherry-pick -x $COMMIT
+    git push origin -f $BRANCH_NAME-$BACKPORT_TREE
+    if [ $# -eq 2 ] && [ $2 = "--ci"  ];then
+      echo "Pushing branch to trigger ci run"
+      git push ci -f $BRANCH_NAME-$BACKPORT_TREE
+    fi
+    pullRequest
+  else
+    echo "Please create a worktree for the version: $1"
+  fi
+  cd $CURRENT_DIR
+}
+
+function hotfix {
+ for version in $*; do 
+   backport $version --ci; 
+ done
+}
+
+function appZip {
+  zip -r "../$1" . -x "*.DS_Store"
+}
+
+tunnel() {
+  if [ -z $1 ] || [ -z $2 ]; then
+    echo -e "Usage: tunnel <dbtype> <ci_site_name>"
+    return -1
+  fi
+
+  local dbType=$1
+  local port=-1
+  if [ $dbType = "mysql" ] || [ $dbType = "maria" ] || [ $dbType = "mariadb" ]; then
+    port=3306
+  elif [ $dbType = "oracle" ]; then
+    port=1521
+  elif [ $dbType = "postgres" ] || [ $dbType = "postgresql" ] || [ $dbType = "pg" ]; then
+    port=5432
+  elif [ $dbType = "db2" ]; then
+    port=50000
+  elif [ $dbType = "sqlserver" ] || [ $dbType = "mssql" ]; then
+    port=1433
+  fi
+
+  local INSTANCE_ID=`aws ec2 describe-instances --profile developer-eng-prod-access --filter Name=private-ip-address,Values=$(dig +short $2.appianci.net) | jq -r '.Reservations[].Instances[].InstanceId'`
+
+  aws sts get-caller-identity --profile developer-eng-prod-access || aws sso login --profile developer-eng-prod-access && aws ssm start-session  --profile developer-eng-prod-access --target $INSTANCE_ID --document-name AWS-StartPortForwardingSession --parameters "{\"portNumber\":[\"$port\"],\"localPortNumber\":[\"$port\"]}"
+}
+
